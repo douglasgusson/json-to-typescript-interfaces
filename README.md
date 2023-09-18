@@ -2,6 +2,10 @@
 
 > JSON converter for typescript interfaces
 
+## Demo in Text Pieces
+
+![Demo in Text Pieces (gif)](/assets/video_demo.gif)
+
 ## Developing
 
 ```bash
@@ -18,6 +22,10 @@ poetry install
 
 ```bash
 cat example.json | python json_to_ts/main.py
+```
+
+```bash
+cat example.json | python json_to_ts/main.py 1 # 1 for camelCase in attributes
 ```
 
 ### Input example

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from sys import stdin, stdout, stderr
+from sys import stdin, stdout, stderr, argv
 import re
 import json
 
@@ -58,7 +58,9 @@ def check_valid_typescript_identifier(identifier: str) -> bool:
 
 
 def str_json_to_typescript_interface(
-    data: dict, interface_name: str = "IRootObject"
+    data: dict,
+    interface_name: str = "IRootObject",
+    apply_attr_camel_case: bool = False,
 ) -> str:
     """
     Convert JSON to TypeScript interface
@@ -85,7 +87,7 @@ def str_json_to_typescript_interface(
                 interfaces.append(str_json_to_typescript_interface(data[key][0], iname))
                 typescript_type = "{}[]".format(case_normalize(iname, True))
 
-        attribute_name = case_normalize(key)
+        attribute_name = case_normalize(key) if apply_attr_camel_case else key
 
         if check_valid_typescript_identifier(attribute_name):
             atributos.append(f"  {attribute_name}: {typescript_type};\n")
@@ -108,6 +110,16 @@ if __name__ == "__main__":
         stderr.write("Invalid JSON")
         exit(1)
 
-    output_string = str_json_to_typescript_interface(_dict)
+    if len(argv) > 1 and len(argv[1]) > 0 and argv[1] not in ["0", "1"]:
+        stderr.write(f"Camelize attributes: 0 or 1 expected, got {len(argv[1])}")
+        exit(1)
+
+    # camelize attributes
+    apply_camelize = bool(int(argv[1])) if len(argv[1]) > 1 else False
+
+    output_string = str_json_to_typescript_interface(
+        data=_dict,
+        apply_attr_camel_case=apply_camelize,
+    )
 
     stdout.write(output_string)
